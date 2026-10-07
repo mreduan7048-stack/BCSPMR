@@ -1,0 +1,613 @@
+<!doctype html><html lang="bn"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0B4A3B"><style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light dark}body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style></head><body><title>BCSP</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anek+Bangla:wght@500;700&family=Hind+Siliguri:wght@400;500;600&display=swap">
+<style>
+/* Layout: mobile-first app shell. Green masthead, sticky yellow-pill tab strip, one scrolling section column, extended add button bottom-right. */
+:root{
+  --bg:#EEF3F0; --surface:#FFFFFF; --surface2:#E4ECE8; --ink:#14231D; --muted:#566B62; --line:#D3DFD9;
+  --accent:#0C6B52; --accent-ink:#FFFFFF; --accent-soft:#D7EDE4;
+  --head:#0B4A3B; --head-ink:#EAF6F0; --tabon:#F3C13A; --tabon-ink:#2B2200;
+  --star:#C98A0B; --bad:#C0392B; --bad-soft:#F8E0DC; --good:#1F8A4C; --shadow:0 6px 20px rgba(10,40,30,.18);
+  --fs:1;
+  --display:'Anek Bangla','Hind Siliguri',system-ui,sans-serif;
+  --body:'Hind Siliguri','Noto Sans Bengali',system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0C1512; --surface:#14201B; --surface2:#1B2A24; --ink:#E6F0EB; --muted:#93A9A0; --line:#26382F;
+  --accent:#3FBF98; --accent-ink:#06251C; --accent-soft:#17382D;
+  --head:#0F2A22; --head-ink:#E6F0EB; --tabon:#E8B84A; --tabon-ink:#2B2200;
+  --star:#E8B84A; --bad:#FF8A7A; --bad-soft:#3A1F1B; --good:#5CD08C; --shadow:0 6px 20px rgba(0,0,0,.5); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0C1512; --surface:#14201B; --surface2:#1B2A24; --ink:#E6F0EB; --muted:#93A9A0; --line:#26382F;
+  --accent:#3FBF98; --accent-ink:#06251C; --accent-soft:#17382D;
+  --head:#0F2A22; --head-ink:#E6F0EB; --tabon:#E8B84A; --tabon-ink:#2B2200;
+  --star:#E8B84A; --bad:#FF8A7A; --bad-soft:#3A1F1B; --good:#5CD08C; --shadow:0 6px 20px rgba(0,0,0,.5); color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:calc(15px*var(--fs));line-height:1.6;-webkit-text-size-adjust:100%}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:0;padding:0}
+:focus-visible{outline:2px solid var(--tabon);outline-offset:2px}
+svg{flex:none}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.wrap{padding-inline:16px;max-width:760px;margin-inline:auto}
+
+header.mast{background:var(--head);color:var(--head-ink);padding-block:14px 12px}
+.mast .row1{display:flex;align-items:center;gap:12px;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.logo{width:42px;height:42px;border-radius:12px;background:var(--tabon);color:var(--tabon-ink);display:grid;place-items:center}
+.brand h1{font:700 1.5em/1 var(--display);letter-spacing:.04em;margin:0}
+.brand p{margin:2px 0 0;font-size:.82em;opacity:.8}
+.fsz{display:flex;gap:4px;background:rgba(255,255,255,.12);padding:3px;border-radius:10px}
+.fsz button{min-width:34px;height:30px;border-radius:8px;font-size:.85em;font-weight:600;color:var(--head-ink)}
+.fsz button[aria-pressed="true"]{background:var(--surface);color:var(--ink)}
+.gsearch{position:relative;margin-top:12px}
+.gsearch svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);opacity:.7}
+.gsearch input{width:100%;height:42px;border-radius:12px;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.1);color:var(--head-ink);padding:0 12px 0 38px}
+.gsearch input::placeholder{color:var(--head-ink);opacity:.65}
+
+nav.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--head);padding-block:0 10px;box-shadow:0 2px 10px rgba(0,0,0,.18)}
+.tabs .scroll{display:flex;gap:6px;overflow-x:auto;padding-inline:16px;scrollbar-width:none}
+.tabs .scroll::-webkit-scrollbar{display:none}
+.tab{display:flex;align-items:center;gap:7px;white-space:nowrap;padding:8px 13px;border-radius:999px;color:var(--head-ink);font-weight:500;font-size:.92em;opacity:.88}
+.tab[aria-selected="true"]{background:var(--tabon);color:var(--tabon-ink);opacity:1;font-weight:600}
+
+main{padding-block:16px 110px;display:flex;flex-direction:column;gap:14px}
+h2.sec{font:700 1.35em/1.25 var(--display);margin:0}
+.sub{color:var(--muted);font-size:.88em;margin:2px 0 0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;min-width:0}
+.cardh{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.cardh h3{font:700 1.05em/1.3 var(--display);margin:0}
+.grow{flex:1;min-width:0}
+.meta{color:var(--muted);font-size:.84em}
+.tag{display:inline-block;font-size:.72em;padding:1px 8px;border-radius:999px;background:var(--surface2);color:var(--muted);margin-left:6px;vertical-align:middle}
+.pill{display:inline-flex;align-items:center;font-size:.8em;font-weight:600;padding:2px 10px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.btn{display:inline-flex;align-items:center;gap:6px;height:38px;padding:0 14px;border-radius:10px;border:1px solid var(--line);background:var(--surface);font-weight:500;font-size:.92em}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.warm{background:var(--bad-soft);border-color:transparent;color:var(--bad)}
+.btn.sm{height:32px;padding:0 10px;font-size:.85em}
+.ib{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;color:var(--muted)}
+.ib:hover{background:var(--surface2)}
+.ib.on{color:var(--star)}
+.ib.on svg{fill:currentColor}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:thin}
+.chip{white-space:nowrap;padding:6px 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);font-size:.9em}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+.chip.add{border-style:dashed;color:var(--accent)}
+
+.field,.fld{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.fld label,.field label{font-size:.85em;font-weight:600;color:var(--muted)}
+input[type=text],input[type=number],input[type=date],input[type=search],select,textarea{width:100%;border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:9px 12px;min-height:42px}
+textarea{resize:vertical;line-height:1.6}
+.ck{display:flex;align-items:center;gap:10px;margin-bottom:12px;font-weight:500}
+.ck input{width:20px;height:20px;accent-color:var(--accent)}
+
+.acc{padding:0;overflow:hidden}
+.acc>.head{display:flex;align-items:center;gap:12px;width:100%;padding:14px;text-align:left}
+.acc .num{width:28px;height:28px;border-radius:8px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-weight:700;font-size:.85em}
+.acc .chev{transition:transform .18s;color:var(--muted)}
+.acc[data-open="1"] .chev{transform:rotate(180deg)}
+.acc .body{border-top:1px solid var(--line)}
+.q{display:flex;gap:10px;padding:12px 14px;border-top:1px solid var(--line)}
+.q:first-child{border-top:0}
+.q .n{color:var(--muted);font-weight:600;min-width:1.6em}
+.q .t{white-space:pre-wrap;overflow-wrap:anywhere}
+.ans{margin-top:8px;padding:10px 12px;border-radius:10px;background:var(--accent-soft);white-space:pre-wrap;overflow-wrap:anywhere;font-size:.94em}
+.qa{display:flex;flex-wrap:wrap;align-items:center;gap:2px;margin-top:6px}
+
+.item{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border-top:1px solid var(--line)}
+.item:first-child{border-top:0}
+.item .ttl{font-weight:500;overflow-wrap:anywhere}
+.item.done .ttl{text-decoration:line-through;color:var(--muted)}
+.chk{width:24px;height:24px;border-radius:7px;border:2px solid var(--line);display:grid;place-items:center;color:transparent;margin-top:2px}
+.chk[aria-checked="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.late{color:var(--bad);font-weight:600}
+.bar{height:8px;border-radius:99px;background:var(--surface2);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:99px}
+.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.stat{text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.stat b{display:block;font:700 1.7em/1.2 var(--display);color:var(--accent)}
+.stat span{color:var(--muted);font-size:.86em}
+.hero{background:var(--head);color:var(--head-ink);border:0}
+.hero .big{font:700 2.6em/1 var(--display);color:var(--tabon)}
+.hero .btn{background:rgba(255,255,255,.12);border-color:transparent;color:var(--head-ink)}
+.notice{background:var(--accent-soft);border-color:transparent}
+.empty{text-align:center;color:var(--muted);padding:26px 14px}
+.empty .btn{margin-top:10px}
+.prow{padding:12px 14px;border-top:1px solid var(--line)}
+.prow:first-child{border-top:0}
+.pad textarea{min-height:170px}
+.timer{font:700 1.6em/1 var(--display);font-variant-numeric:tabular-nums}
+.thumb{display:block;max-width:100%;max-height:260px;border-radius:10px;border:1px solid var(--line)}
+.qbox{padding:10px 12px;border-radius:10px;background:var(--surface2);white-space:pre-wrap;overflow-wrap:anywhere;font-size:.94em}
+
+.fab{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:30;height:52px;padding:0 20px 0 16px;border-radius:999px;background:var(--accent);color:var(--accent-ink);display:flex;align-items:center;gap:8px;font-weight:600;box-shadow:var(--shadow)}
+#ov{position:fixed;inset:0;z-index:50;background:rgba(5,15,11,.55);display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--surface);width:100%;max-width:560px;max-height:92%;overflow-y:auto;border-radius:20px 20px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom,0px))}
+.sheet-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.sheet-h h2{font:700 1.2em/1.3 var(--display);margin:0}
+.sheet .btns{margin-top:6px}
+.sheet .sp{flex:1}
+@media (min-width:640px){#ov{align-items:center}.sheet{border-radius:20px}}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom,0px));z-index:60;background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:999px;font-size:.9em;max-width:90%}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<header class="mast">
+  <div class="wrap">
+    <div class="row1">
+      <div class="brand">
+        <div class="logo" id="logo"></div>
+        <div><h1>BCSP</h1><p>বিসিএস প্রস্তুতি সঙ্গী</p></div>
+      </div>
+      <div class="fsz" role="group" aria-label="লেখার আকার">
+        <button data-act="fs" data-v="1" aria-pressed="true">A</button>
+        <button data-act="fs" data-v="1.12" aria-pressed="false">A+</button>
+        <button data-act="fs" data-v="1.25" aria-pressed="false">A++</button>
+      </div>
+    </div>
+    <div class="gsearch">
+      <span id="sico"></span>
+      <label class="sr" for="gs">সব তথ্যে খুঁজুন</label>
+      <input id="gs" type="search" placeholder="প্রশ্ন, সিলেবাস, টপিক বা কাজ খুঁজুন" autocomplete="off">
+    </div>
+  </div>
+</header>
+<nav class="tabs" aria-label="অপশন"><div class="scroll" id="tabs" role="tablist"></div></nav>
+<div class="wrap"><main id="main"></main></div>
+<button class="fab" id="fab" data-act="fab"></button>
+<div id="ov" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="mt">
+    <div class="sheet-h"><h2 id="mt"></h2><button class="ib" data-act="mclose" aria-label="বন্ধ করুন" id="mx"></button></div>
+    <form id="mf"></form>
+  </div>
+</div>
+<div id="toast" hidden></div>
+
+<script>
+(function(){
+'use strict';
+var KEY='bcsp-v1';
+var BN='০১২৩৪৫৬৭৮৯';
+var MONTHS=['জানুয়ারি','ফেব্রুয়ারি','মার্চ','এপ্রিল','মে','জুন','জুলাই','আগস্ট','সেপ্টেম্বর','অক্টোবর','নভেম্বর','ডিসেম্বর'];
+var $=function(s,r){return (r||document).querySelector(s)};
+var bn=function(v){return String(v).replace(/\d/g,function(d){return BN[d]})};
+var esc=function(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})};
+var pad=function(n){return String(n).padStart(2,'0')};
+var ymd=function(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())};
+var today=function(){return ymd(new Date())};
+var addDays=function(n){var d=new Date();d.setDate(d.getDate()+n);return ymd(d)};
+var fdate=function(s){if(!s)return '';var p=s.split('-').map(Number);return bn(p[2])+' '+MONTHS[p[1]-1]+', '+bn(p[0])};
+var uid=function(){return Math.random().toString(36).slice(2,9)+Date.now().toString(36).slice(-3)};
+var fmt=function(s){return bn(pad(Math.floor(s/60))+':'+pad(s%60))};
+
+var P={
+ home:'M3 11l9-8 9 8v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z',
+ book:'M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5zM4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5',
+ check:'M9 6h11M9 12h11M9 18h11M4 6l1 1 2-2M4 12l1 1 2-2M4 18l1 1 2-2',
+ layers:'M12 3l9 5-9 5-9-5zM3 13l9 5 9-5',
+ plus:'M12 5v14M5 12h14',
+ cal:'M7 3v3M17 3v3M4 8h16M5 5h14a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z',
+ bm:'M6 3h12v18l-6-4-6 4z',
+ pen:'M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z',
+ star:'M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z',
+ cam:'M4 8h3l2-3h6l2 3h3v11H4zM12 17a4 4 0 1 0 0-8 4 4 0 0 0 0 8z',
+ img:'M4 5h16v14H4zM4 15l5-5 4 4 3-3 4 4M9 9.5h.01',
+ trash:'M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3',
+ search:'M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM21 21l-4.3-4.3',
+ chev:'M6 9l6 6 6-6',
+ clock:'M12 7v5l3 2M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z',
+ tick:'M5 12l4 4 10-10',
+ x:'M6 6l12 12M18 6L6 18',
+ grid:'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z',
+ chart:'M4 20V10M10 20V4M16 20v-8M22 20H2',
+ bank:'M3 10l9-6 9 6M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 21h18',
+ edit:'M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z'
+};
+var ico=function(n,s){s=s||18;return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="'+P[n]+'"/></svg>'};
+
+var TABS=[
+ ['dash','ড্যাশবোর্ড (Dashboard)','chart'],
+ ['qb','লিখিত প্রশ্নব্যাংক','book'],
+ ['wsyl','লিখিত সিলেবাস','check'],
+ ['psyl','প্রিলি সিলেবাস ও মান বণ্টন','layers'],
+ ['extra','প্রিলি-লিখিত অতিরিক্ত টপিকস','grid'],
+ ['plan','স্টাডি প্ল্যান (Study Plan)','cal'],
+ ['bm','সংরক্ষিত','bm'],
+ ['prac','প্র্যাকটিস মোড','pen']
+];
+var FAB={qb:'প্রশ্ন যোগ করুন',wsyl:'টপিক যোগ করুন',psyl:'বিষয় যোগ করুন',extra:'নোট যোগ করুন',plan:'কাজ যোগ করুন',bm:'বুকমার্ক যোগ করুন'};
+
+/* ---------- data ---------- */
+var mem=null;
+function seed(){
+  var t=today();
+  return {
+    v:1,
+    settings:{examName:'পরবর্তী বিসিএস',examDate:''},
+    subjects:[
+      {id:'bn',name:'বাংলা'},{id:'en',name:'ইংরেজি'},{id:'ml',name:'গাণিতিক যুক্তি'},{id:'mi',name:'মানসিক দক্ষতা'},
+      {id:'sc',name:'সাধারণ বিজ্ঞান ও প্রযুক্তি'},{id:'bd',name:'বাংলাদেশ বিষয়াবলি'},{id:'in',name:'আন্তর্জাতিক বিষয়াবলি'}
+    ],
+    questions:[
+      {id:'q1',s:1,subj:'bn',bcs:47,marks:5,text:'সন্ধি কাকে বলে? স্বরসন্ধি ও ব্যঞ্জনসন্ধির পার্থক্য উদাহরণসহ লেখো।',ans:'সন্ধি: দুটি ধ্বনির মিলন। উদাহরণ: নর + অধম = নরাধম (স্বরসন্ধি)।',star:1},
+      {id:'q2',s:1,subj:'bn',bcs:46,marks:5,text:'সমাস কাকে বলে? দ্বন্দ্ব ও কর্মধারয় সমাসের পার্থক্য লেখো।',ans:'',star:0},
+      {id:'q3',s:1,subj:'en',bcs:47,marks:5,text:'Write a paragraph on the importance of time management.',ans:'',star:0},
+      {id:'q4',s:1,subj:'ml',bcs:45,marks:5,text:'একটি সংখ্যার ২০% যোগ করলে ৯৬ হয়। সংখ্যাটি কত? ধাপে ধাপে সমাধান করো।',ans:'সংখ্যা × ১.২ = ৯৬, অতএব সংখ্যা = ৮০।',star:0},
+      {id:'q5',s:1,subj:'mi',bcs:45,marks:5,text:'সংখ্যাক্রমটির পরবর্তী সংখ্যা কত? ২, ৬, ১২, ২০, ?',ans:'পার্থক্য ৪, ৬, ৮, ১০ — পরের সংখ্যা ৩০।',star:0},
+      {id:'q6',s:1,subj:'sc',bcs:46,marks:5,text:'গ্রিনহাউস প্রভাব কী? এর কারণ ও প্রতিকার লেখো।',ans:'',star:0},
+      {id:'q7',s:1,subj:'bd',bcs:47,marks:5,text:'মুক্তিযুদ্ধে ছয় দফার গুরুত্ব ব্যাখ্যা করো।',ans:'',star:0},
+      {id:'q8',s:1,subj:'in',bcs:46,marks:5,text:'জাতিসংঘ নিরাপত্তা পরিষদের গঠন ও ক্ষমতা সংক্ষেপে লেখো।',ans:'',star:0}
+    ],
+    syllabus:[
+      {id:'s1',s:1,subj:'bn',title:'ধ্বনি ও বর্ণ',done:1},{id:'s2',s:1,subj:'bn',title:'সন্ধি ও সমাস',done:0},{id:'s3',s:1,subj:'bn',title:'প্রবন্ধ রচনা',done:0},
+      {id:'s4',s:1,subj:'en',title:'Tense ও Voice',done:1},{id:'s5',s:1,subj:'en',title:'Translation',done:0},
+      {id:'s6',s:1,subj:'ml',title:'শতকরা ও অনুপাত',done:0},{id:'s7',s:1,subj:'bd',title:'মুক্তিযুদ্ধ ও স্বাধীনতা',done:0}
+    ],
+    preli:[
+      {id:'p1',subj:'বাংলা ভাষা ও সাহিত্য',marks:35,topics:'ব্যাকরণ, সাহিত্য'},
+      {id:'p2',subj:'ইংরেজি ভাষা ও সাহিত্য',marks:35,topics:'Grammar, Vocabulary, Literature'},
+      {id:'p3',subj:'বাংলাদেশ বিষয়াবলি',marks:30,topics:''},
+      {id:'p4',subj:'আন্তর্জাতিক বিষয়াবলি',marks:20,topics:''},
+      {id:'p5',subj:'ভূগোল, পরিবেশ ও দুর্যোগ ব্যবস্থাপনা',marks:10,topics:''},
+      {id:'p6',subj:'সাধারণ বিজ্ঞান',marks:15,topics:''},
+      {id:'p7',subj:'কম্পিউটার ও তথ্যপ্রযুক্তি',marks:15,topics:''},
+      {id:'p8',subj:'গাণিতিক যুক্তি',marks:15,topics:''},
+      {id:'p9',subj:'মানসিক দক্ষতা',marks:15,topics:''},
+      {id:'p10',subj:'নৈতিকতা, মূল্যবোধ ও সুশাসন',marks:10,topics:''}
+    ],
+    extra:[
+      {id:'e1',s:1,subj:'bd',title:'গুরুত্বপূর্ণ দিবস',body:'২১ ফেব্রুয়ারি — আন্তর্জাতিক মাতৃভাষা দিবস\n২৬ মার্চ — স্বাধীনতা দিবস\n১৬ ডিসেম্বর — বিজয় দিবস',star:0}
+    ],
+    plan:[
+      {id:'t1',s:1,title:'বাংলা ব্যাকরণ: সন্ধি ও সমাস রিভিশন',date:t,subj:'bn',done:0},
+      {id:'t2',s:1,title:'গাণিতিক যুক্তি: ১০টি অঙ্ক অনুশীলন',date:addDays(1),subj:'ml',done:0},
+      {id:'t3',s:1,title:'লিখিত প্রশ্ন: ৫টি উত্তর লিখে দেখা',date:addDays(2),subj:'',done:0}
+    ],
+    bm:[],
+    prac:[]
+  };
+}
+function load(){try{var r=localStorage.getItem(KEY);if(r){var d=JSON.parse(r);if(d&&d.v)return d}}catch(e){}return null}
+var S=load()||seed();
+['subjects','questions','syllabus','preli','extra','plan','bm','prac'].forEach(function(k){if(!Array.isArray(S[k]))S[k]=[]});
+S.settings=S.settings||{examName:'',examDate:''};
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));return true}catch(e){toast('এই ডিভাইসে সংরক্ষণ করা যায়নি। ছবি মুছে জায়গা খালি করুন।');return false}}
+var hasSample=function(){return ['questions','syllabus','extra','plan'].some(function(k){return S[k].some(function(i){return i.s})})};
+
+/* ---------- ui state ---------- */
+var ui={tab:'dash',qsub:'all',qbcs:'all',qq:'',defOpen:true,open:{},ans:{},wsub:'bn',esub:'all',eq:'',pf:'all',gq:''};
+var draft={qid:'',text:'',img:'',secs:0,run:false,t0:0};
+var tick=null;
+var subName=function(id){var s=S.subjects.filter(function(x){return x.id===id})[0];return s?s.name:''};
+var subOpts=function(none){var o=S.subjects.map(function(s){return [s.id,s.name]});return none?[['','— নির্দিষ্ট নয় —']].concat(o):o};
+var byId=function(arr,id){return S[arr].filter(function(x){return x.id===id})[0]};
+var sampleTag=function(i){return i.s?'<span class="tag">নমুনা</span>':''};
+
+/* ---------- views ---------- */
+function empty(msg,btn){return '<div class="card empty"><div>'+msg+'</div>'+(btn||'')+'</div>'}
+function addBtn(act,label){return '<button class="btn pri" data-act="'+act+'">'+ico('plus',16)+' '+label+'</button>'}
+function chips(list,cur,act,addAct){
+  return '<div class="chips" role="group">'+list.map(function(c){return '<button class="chip" data-act="'+act+'" data-v="'+esc(c[0])+'" aria-pressed="'+(c[0]===cur)+'">'+esc(c[1])+'</button>'}).join('')+(addAct?'<button class="chip add" data-act="'+addAct+'">+ বিষয়</button>':'')+'</div>';
+}
+
+function vDash(){
+  var ex=S.settings,cd='';
+  if(ex.examDate){
+    var diff=Math.round((new Date(ex.examDate+'T00:00:00')-new Date(today()+'T00:00:00'))/864e5);
+    cd=diff>0?'<div class="big">'+bn(diff)+'</div><div>দিন বাকি</div>':diff===0?'<div class="big">আজ</div><div>পরীক্ষার দিন</div>':'<div>পরীক্ষার তারিখ পেরিয়ে গেছে</div>';
+  } else cd='<div>পরীক্ষার তারিখ এখনো দেওয়া হয়নি</div>';
+  var sT=S.syllabus.length,sD=S.syllabus.filter(function(x){return x.done}).length,pT=S.plan.length,pD=S.plan.filter(function(x){return x.done}).length;
+  var pc=sT?Math.round(sD*100/sT):0;
+  var bmN=S.questions.filter(function(x){return x.star}).length+S.extra.filter(function(x){return x.star}).length+S.bm.length;
+  var t=today();
+  var due=S.plan.filter(function(x){return !x.done&&x.date&&x.date<=t}).sort(function(a,b){return a.date<b.date?-1:1});
+  var upc=S.plan.filter(function(x){return !x.done&&(!x.date||x.date>t)}).sort(function(a,b){return (a.date||'9')<(b.date||'9')?-1:1}).slice(0,3);
+  var tasks=due.concat(upc).slice(0,6);
+  var rows=S.subjects.map(function(s){
+    var a=S.syllabus.filter(function(x){return x.subj===s.id}),d=a.filter(function(x){return x.done}).length;
+    if(!a.length)return '';
+    return '<div style="margin-top:10px"><div class="cardh"><span>'+esc(s.name)+'</span><span class="meta">'+bn(d)+'/'+bn(a.length)+'</span></div><div class="bar" style="margin-top:4px"><i style="width:'+Math.round(d*100/a.length)+'%"></i></div></div>';
+  }).join('');
+  return ''
+  +(hasSample()?'<div class="card notice"><div class="cardh"><div class="grow"><b>এখানকার কিছু তথ্য নমুনা</b><div class="meta">নিজের তথ্য যোগ করুন, তারপর নমুনাগুলো মুছে দিন।</div></div><button class="btn sm warm" data-act="clearsample">নমুনা মুছুন</button></div></div>':'')
+  +'<div class="card hero"><div class="cardh"><div><div class="meta" style="color:inherit;opacity:.8">'+esc(ex.examName||'পরীক্ষা')+'</div>'+cd+'</div><button class="btn sm" data-act="setexam">'+ico('edit',15)+' তারিখ দিন</button></div></div>'
+  +'<div class="stats">'
+  +'<button class="stat" data-act="tab" data-v="qb"><b>'+bn(S.questions.length)+'</b><span>লিখিত প্রশ্ন</span></button>'
+  +'<button class="stat" data-act="tab" data-v="wsyl"><b>'+bn(pc)+'%</b><span>সিলেবাস শেষ ('+bn(sD)+'/'+bn(sT)+')</span></button>'
+  +'<button class="stat" data-act="tab" data-v="plan"><b>'+bn(pD)+'/'+bn(pT)+'</b><span>স্টাডি প্ল্যানের কাজ</span></button>'
+  +'<button class="stat" data-act="tab" data-v="bm"><b>'+bn(bmN)+'</b><span>সংরক্ষিত</span></button>'
+  +'</div>'
+  +'<div class="card"><div class="cardh"><h3>দ্রুত যোগ করুন</h3></div><div class="btns" style="margin-top:10px">'
+  +'<button class="btn" data-act="addq">'+ico('book',16)+' প্রশ্ন</button><button class="btn" data-act="addsyl">'+ico('check',16)+' সিলেবাস টপিক</button>'
+  +'<button class="btn" data-act="addpreli">'+ico('layers',16)+' প্রিলি বিষয়</button><button class="btn" data-act="addnote">'+ico('grid',16)+' অতিরিক্ত নোট</button>'
+  +'<button class="btn" data-act="addtask">'+ico('cal',16)+' কাজ</button><button class="btn" data-act="addbm">'+ico('bm',16)+' বুকমার্ক</button></div></div>'
+  +'<div class="card acc"><div class="cardh" style="padding:14px 14px 6px"><h3>করণীয়</h3><button class="btn sm" data-act="tab" data-v="plan">সব দেখুন</button></div>'
+  +(tasks.length?tasks.map(planRow).join(''):'<div class="empty">কোনো অসম্পন্ন কাজ নেই।</div>')+'</div>'
+  +(rows?'<div class="card"><div class="cardh"><h3>বিষয়ভিত্তিক সিলেবাস অগ্রগতি</h3></div>'+rows+'</div>':'')
+  +'<div class="card"><div class="cardh"><h3>ডাটা ব্যাকআপ</h3></div><p class="meta" style="margin:4px 0 10px">তথ্য এই ডিভাইসের ব্রাউজারে জমা থাকে। অন্য ডিভাইসে নিতে কপি করে সেখানে আমদানি করুন (প্র্যাকটিসের ছবি বাদ যায়)।</p><div class="btns"><button class="btn" data-act="copy">ডাটা কপি করুন</button><button class="btn" data-act="import">ডাটা আমদানি</button></div></div>';
+}
+
+function qList(){
+  var q=ui.qq.trim().toLowerCase();
+  var qs=S.questions.filter(function(x){
+    return (ui.qsub==='all'||x.subj===ui.qsub)&&(ui.qbcs==='all'||String(x.bcs)===ui.qbcs)&&(!q||(x.text+' '+x.ans).toLowerCase().indexOf(q)>-1);
+  });
+  if(!qs.length)return empty('কোনো প্রশ্ন পাওয়া যায়নি।',addBtn('addq','প্রশ্ন যোগ করুন'));
+  var groups={};qs.forEach(function(x){var k=x.bcs||0;(groups[k]=groups[k]||[]).push(x)});
+  var keys=Object.keys(groups).map(Number).sort(function(a,b){return b-a});
+  return keys.map(function(k,i){
+    var g=groups[k],open=ui.open[k]!==undefined?ui.open[k]:ui.defOpen;
+    var title=k?bn(k)+'তম বিসিএস (লিখিত)':'বিসিএস নম্বর ছাড়া';
+    return '<div class="card acc" data-open="'+(open?1:0)+'"><button class="head" data-act="tog" data-v="'+k+'" aria-expanded="'+open+'"><span class="num">'+bn(i+1)+'</span><span class="grow"><b>'+title+'</b><div class="meta">মোট প্রশ্ন: '+bn(g.length)+' টি</div></span><span class="chev">'+ico('chev')+'</span></button>'
+    +(open?'<div class="body">'+g.map(function(x,j){
+      return '<div class="q"><span class="n">'+bn(j+1)+'.</span><div class="grow"><div class="t">'+esc(x.text)+'</div>'
+      +'<div class="meta" style="margin-top:4px"><span class="pill">'+esc(subName(x.subj)||'বিষয় নেই')+'</span>'+(x.marks!==''&&x.marks!=null?' · মান '+bn(x.marks):'')+sampleTag(x)+'</div>'
+      +(ui.ans[x.id]?'<div class="ans">'+(x.ans?esc(x.ans):'কোনো উত্তর বা নোট যোগ করা হয়নি।')+'</div>':'')
+      +'<div class="qa"><button class="btn sm" data-act="ans" data-id="'+x.id+'">'+(ui.ans[x.id]?'উত্তর লুকান':'উত্তর / নোট')+'</button>'
+      +'<button class="ib'+(x.star?' on':'')+'" data-act="star" data-k="questions" data-id="'+x.id+'" aria-label="বুকমার্ক" aria-pressed="'+(!!x.star)+'">'+ico('star')+'</button>'
+      +'<button class="ib" data-act="prq" data-id="'+x.id+'" aria-label="লিখে অনুশীলন করুন">'+ico('pen')+'</button>'
+      +'<button class="ib" data-act="editq" data-id="'+x.id+'" aria-label="সম্পাদনা">'+ico('edit')+'</button></div></div></div>';
+    }).join('')+'</div>':'')+'</div>';
+  }).join('');
+}
+function vQB(){
+  var yrs=Array.from(new Set(S.questions.map(function(x){return x.bcs}).filter(Boolean))).sort(function(a,b){return b-a});
+  return '<div class="cardh"><div><h2 class="sec">বিসিএস লিখিত প্রশ্নব্যাংক</h2><p class="sub">পরীক্ষার প্রশ্ন, মান ও উত্তরের নোট এখানে জমা করুন।</p></div></div>'
+  +chips([['all','সব বিষয়']].concat(subOpts()),ui.qsub,'qsub','addsubj')
+  +chips([['all','সব বছর']].concat(yrs.map(function(y){return [String(y),bn(y)+'তম বিসিএস']})),ui.qbcs,'qbcs')
+  +'<div class="field"><label class="sr" for="qs">প্রশ্নের মধ্যে খুঁজুন</label><input id="qs" type="search" placeholder="এই বিষয়ের মধ্যে খুঁজুন..." value="'+esc(ui.qq)+'"></div>'
+  +'<div class="btns"><button class="btn sm" data-act="expall">সব প্রসারিত করুন</button><button class="btn sm" data-act="colall">সব সংকুচিত করুন</button></div>'
+  +'<div id="qlist" style="display:flex;flex-direction:column;gap:12px">'+qList()+'</div>';
+}
+
+function vWSyl(){
+  if(!subName(ui.wsub)&&S.subjects[0])ui.wsub=S.subjects[0].id;
+  var a=S.syllabus.filter(function(x){return x.subj===ui.wsub}),d=a.filter(function(x){return x.done}).length;
+  return '<div><h2 class="sec">লিখিত সিলেবাস</h2><p class="sub">টপিক যোগ করুন, শেষ হলে টিক দিন।</p></div>'
+  +chips(subOpts(),ui.wsub,'wsub','addsubj')
+  +'<div class="card"><div class="cardh"><h3>'+esc(subName(ui.wsub))+'</h3><span class="meta">'+bn(d)+'/'+bn(a.length)+' শেষ</span></div><div class="bar" style="margin-top:8px"><i style="width:'+(a.length?Math.round(d*100/a.length):0)+'%"></i></div></div>'
+  +(a.length?'<div class="card acc">'+a.map(function(x){
+    return '<div class="item'+(x.done?' done':'')+'"><button class="chk" role="checkbox" aria-checked="'+(!!x.done)+'" aria-label="শেষ হয়েছে" data-act="sylchk" data-id="'+x.id+'">'+ico('tick',16)+'</button><div class="grow"><div class="ttl">'+esc(x.title)+sampleTag(x)+'</div></div><button class="ib" data-act="editsyl" data-id="'+x.id+'" aria-label="সম্পাদনা">'+ico('edit')+'</button></div>';
+  }).join('')+'</div>':empty('এই বিষয়ে এখনো কোনো টপিক নেই।',addBtn('addsyl','টপিক যোগ করুন')));
+}
+
+function vPSyl(){
+  var tot=S.preli.reduce(function(s,x){return s+(Number(x.marks)||0)},0);
+  return '<div><h2 class="sec">প্রিলি সিলেবাস ও মান বণ্টন</h2><p class="sub">বিষয়ভিত্তিক নম্বর ও টপিক। আপনার সার্কুলারের সঙ্গে মিলিয়ে সম্পাদনা করুন।</p></div>'
+  +'<div class="card hero"><div class="cardh"><span>মোট নম্বর</span><span class="big" style="font-size:2em">'+bn(tot)+'</span></div></div>'
+  +(S.preli.length?'<div class="card acc">'+S.preli.map(function(x){
+    var w=tot?Math.round((Number(x.marks)||0)*100/tot):0;
+    return '<div class="prow"><div class="cardh"><div class="grow"><b>'+esc(x.subj)+'</b>'+(x.topics?'<div class="meta" style="white-space:pre-wrap">'+esc(x.topics)+'</div>':'')+'</div><span class="pill">'+bn(x.marks||0)+' নম্বর</span><button class="ib" data-act="editpreli" data-id="'+x.id+'" aria-label="সম্পাদনা">'+ico('edit')+'</button></div><div class="bar" style="margin-top:6px"><i style="width:'+w+'%"></i></div></div>';
+  }).join('')+'</div>':empty('কোনো বিষয় যোগ করা হয়নি।',addBtn('addpreli','বিষয় যোগ করুন')));
+}
+
+function eList(){
+  var q=ui.eq.trim().toLowerCase();
+  var a=S.extra.filter(function(x){return (ui.esub==='all'||x.subj===ui.esub)&&(!q||(x.title+' '+x.body).toLowerCase().indexOf(q)>-1)});
+  if(!a.length)return empty('কোনো নোট নেই।',addBtn('addnote','নোট যোগ করুন'));
+  return a.map(function(x){
+    return '<div class="card"><div class="cardh"><div class="grow"><b>'+esc(x.title)+'</b>'+sampleTag(x)+'<div class="meta">'+esc(subName(x.subj)||'সাধারণ')+'</div></div><button class="ib'+(x.star?' on':'')+'" data-act="star" data-k="extra" data-id="'+x.id+'" aria-label="বুকমার্ক" aria-pressed="'+(!!x.star)+'">'+ico('star')+'</button><button class="ib" data-act="editnote" data-id="'+x.id+'" aria-label="সম্পাদনা">'+ico('edit')+'</button></div><div style="white-space:pre-wrap;overflow-wrap:anywhere;margin-top:8px">'+esc(x.body)+'</div></div>';
+  }).join('');
+}
+function vExtra(){
+  return '<div><h2 class="sec">প্রিলি-লিখিত অতিরিক্ত টপিকস</h2><p class="sub">প্রিলি ও লিখিত দুই ধাপেই কাজে লাগে এমন নোট ও তথ্য।</p></div>'
+  +chips([['all','সব']].concat(subOpts()),ui.esub,'esub','addsubj')
+  +'<div class="field"><label class="sr" for="es">নোটে খুঁজুন</label><input id="es" type="search" placeholder="নোটে খুঁজুন..." value="'+esc(ui.eq)+'"></div>'
+  +'<div id="elist" style="display:flex;flex-direction:column;gap:12px">'+eList()+'</div>';
+}
+
+function planRow(x){
+  var late=!x.done&&x.date&&x.date<today();
+  return '<div class="item'+(x.done?' done':'')+'"><button class="chk" role="checkbox" aria-checked="'+(!!x.done)+'" aria-label="সম্পন্ন" data-act="planchk" data-id="'+x.id+'">'+ico('tick',16)+'</button><div class="grow"><div class="ttl">'+esc(x.title)+sampleTag(x)+'</div><div class="meta">'+(x.date?(late?'<span class="late">বিলম্বিত · </span>':'')+fdate(x.date):'তারিখ নেই')+(x.subj?' · '+esc(subName(x.subj)):'')+'</div></div><button class="ib" data-act="edittask" data-id="'+x.id+'" aria-label="সম্পাদনা">'+ico('edit')+'</button></div>';
+}
+function vPlan(){
+  var a=S.plan.filter(function(x){return ui.pf==='all'||(ui.pf==='done'?x.done:!x.done)}).sort(function(a,b){return (a.date||'9999')<(b.date||'9999')?-1:1});
+  return '<div><h2 class="sec">স্টাডি প্ল্যান</h2><p class="sub">দিনের কাজ ঠিক করুন, শেষ হলে টিক দিন।</p></div>'
+  +chips([['all','সব'],['todo','বাকি'],['done','সম্পন্ন']],ui.pf,'pf')
+  +(a.length?'<div class="card acc">'+a.map(planRow).join('')+'</div>':empty('কোনো কাজ নেই।',addBtn('addtask','কাজ যোগ করুন')));
+}
+
+function vBM(){
+  var qs=S.questions.filter(function(x){return x.star}),es=S.extra.filter(function(x){return x.star});
+  var out='<div><h2 class="sec">সংরক্ষিত</h2><p class="sub">তারা চিহ্ন দেওয়া প্রশ্ন ও নোট, আর আপনার নিজের বুকমার্ক।</p></div>';
+  out+='<div class="card acc"><div class="cardh" style="padding:14px 14px 6px"><h3>আমার বুকমার্ক</h3></div>'+(S.bm.length?S.bm.map(function(x){
+    var link=/^https?:\/\//i.test(x.note||'');
+    return '<div class="item"><div class="grow"><div class="ttl">'+esc(x.title)+'</div>'+(x.note?'<div class="meta" style="overflow-wrap:anywhere;white-space:pre-wrap">'+(link?'<a href="'+esc(x.note)+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent)">'+esc(x.note)+'</a>':esc(x.note))+'</div>':'')+'</div><button class="ib" data-act="editbm" data-id="'+x.id+'" aria-label="সম্পাদনা">'+ico('edit')+'</button></div>';
+  }).join(''):'<div class="empty">কিছু যোগ করা হয়নি।</div>')+'</div>';
+  out+='<div class="card acc"><div class="cardh" style="padding:14px 14px 6px"><h3>তারা চিহ্নিত প্রশ্ন</h3></div>'+(qs.length?qs.map(function(x){
+    return '<div class="item"><div class="grow"><div class="ttl">'+esc(x.text)+'</div><div class="meta">'+esc(subName(x.subj))+(x.bcs?' · '+bn(x.bcs)+'তম বিসিএস':'')+'</div></div><button class="ib on" data-act="star" data-k="questions" data-id="'+x.id+'" aria-label="বুকমার্ক সরান">'+ico('star')+'</button></div>';
+  }).join(''):'<div class="empty">প্রশ্নব্যাংকে তারা চিহ্ন দিলে এখানে আসবে।</div>')+'</div>';
+  out+='<div class="card acc"><div class="cardh" style="padding:14px 14px 6px"><h3>তারা চিহ্নিত নোট</h3></div>'+(es.length?es.map(function(x){
+    return '<div class="item"><div class="grow"><div class="ttl">'+esc(x.title)+'</div><div class="meta" style="white-space:pre-wrap">'+esc(x.body.slice(0,120))+'</div></div><button class="ib on" data-act="star" data-k="extra" data-id="'+x.id+'" aria-label="বুকমার্ক সরান">'+ico('star')+'</button></div>';
+  }).join(''):'<div class="empty">অতিরিক্ত টপিকসে তারা চিহ্ন দিলে এখানে আসবে।</div>')+'</div>';
+  return out;
+}
+
+function vPrac(){
+  var q=draft.qid?byId('questions',draft.qid):null;
+  var opts='<option value="">— প্রশ্ন বেছে নিন (ঐচ্ছিক) —</option>'+S.questions.map(function(x){return '<option value="'+x.id+'"'+(x.id===draft.qid?' selected':'')+'>'+esc(x.text.slice(0,60))+'</option>'}).join('');
+  var out='<div><h2 class="sec">প্র্যাকটিস মোড</h2><p class="sub">সময় ধরে উত্তর লিখুন, হাতের লেখার ছবি যোগ করে সেশন সংরক্ষণ করুন।</p></div>';
+  out+='<div class="card pad"><div class="field"><label for="pd-q">অনুশীলনের প্রশ্ন</label><select id="pd-q">'+opts+'</select></div>'
+   +(q?'<div class="qbox" style="margin-bottom:12px">'+esc(q.text)+'</div>':'')
+   +'<div class="cardh" style="margin-bottom:12px"><div class="timer" id="pt" aria-live="off">'+fmt(draft.secs)+'</div><div class="btns"><button class="btn sm" data-act="ptoggle">'+ico('clock',15)+' '+(draft.run?'থামান':'সময় শুরু')+'</button><button class="btn sm" data-act="preset">রিসেট</button></div></div>'
+   +'<div class="field"><label for="pd-text">আপনার উত্তর</label><textarea id="pd-text" placeholder="এখানে উত্তর লিখুন...">'+esc(draft.text)+'</textarea></div>'
+   +(draft.img?'<div style="margin-bottom:12px"><img class="thumb" src="'+draft.img+'" alt="হাতের লেখার ছবি"><button class="btn sm warm" style="margin-top:8px" data-act="pimgrm">ছবি সরান</button></div>':'')
+   +'<div class="btns"><label class="btn" for="pi-cam">'+ico('cam',16)+' ক্যামেরা</label><label class="btn" for="pi-gal">'+ico('img',16)+' গ্যালারি</label>'
+   +'<input class="sr" id="pi-cam" type="file" accept="image/*" capture="environment"><input class="sr" id="pi-gal" type="file" accept="image/*">'
+   +'<button class="btn pri" data-act="psave">সেশন সংরক্ষণ করুন</button></div></div>';
+  out+='<div class="card acc"><div class="cardh" style="padding:14px 14px 6px"><h3>সংরক্ষিত সেশন</h3><span class="meta">'+bn(S.prac.length)+' টি</span></div>'+(S.prac.length?S.prac.slice().reverse().map(function(x){
+    return '<div class="prow"><div class="cardh"><div class="grow"><b style="overflow-wrap:anywhere">'+esc(x.title||'শিরোনামহীন')+'</b><div class="meta">'+fdate(x.date)+(x.secs?' · '+fmt(x.secs):'')+'</div></div><button class="ib" data-act="editprac" data-id="'+x.id+'" aria-label="সম্পাদনা">'+ico('edit')+'</button></div>'
+    +(x.text?'<div style="white-space:pre-wrap;overflow-wrap:anywhere;margin-top:6px">'+esc(x.text)+'</div>':'')
+    +(x.img?'<button data-act="zoom" data-id="'+x.id+'" style="margin-top:8px;display:block"><img class="thumb" style="max-height:140px" src="'+x.img+'" alt="হাতের লেখার ছবি"></button>':'')+'</div>';
+  }).join(''):'<div class="empty">এখনো কোনো সেশন সংরক্ষণ করা হয়নি।</div>')+'</div>';
+  return out;
+}
+
+function vSearch(){
+  var q=ui.gq.trim().toLowerCase(),out='<div><h2 class="sec">খোঁজার ফল</h2><p class="sub">“'+esc(ui.gq)+'”</p></div>',n=0;
+  function sec(title,tab,items){if(!items.length)return;n+=items.length;out+='<div class="card acc"><div class="cardh" style="padding:14px 14px 6px"><h3>'+title+'</h3></div>'+items.map(function(t){return '<button class="item" style="width:100%;text-align:left" data-act="tab" data-v="'+tab+'"><div class="grow"><div class="ttl">'+esc(t[0])+'</div><div class="meta">'+esc(t[1]||'')+'</div></div></button>'}).join('')+'</div>'}
+  var m=function(s){return String(s||'').toLowerCase().indexOf(q)>-1};
+  sec('লিখিত প্রশ্ন','qb',S.questions.filter(function(x){return m(x.text)||m(x.ans)}).map(function(x){return [x.text,subName(x.subj)]}));
+  sec('লিখিত সিলেবাস','wsyl',S.syllabus.filter(function(x){return m(x.title)}).map(function(x){return [x.title,subName(x.subj)]}));
+  sec('প্রিলি বিষয়','psyl',S.preli.filter(function(x){return m(x.subj)||m(x.topics)}).map(function(x){return [x.subj,bn(x.marks||0)+' নম্বর']}));
+  sec('অতিরিক্ত টপিকস','extra',S.extra.filter(function(x){return m(x.title)||m(x.body)}).map(function(x){return [x.title,x.body.slice(0,80)]}));
+  sec('স্টাডি প্ল্যান','plan',S.plan.filter(function(x){return m(x.title)}).map(function(x){return [x.title,fdate(x.date)]}));
+  sec('বুকমার্ক','bm',S.bm.filter(function(x){return m(x.title)||m(x.note)}).map(function(x){return [x.title,x.note]}));
+  if(!n)out+=empty('কিছু পাওয়া যায়নি।');
+  return out;
+}
+
+/* ---------- render ---------- */
+function render(){
+  if(tick){clearInterval(tick);tick=null}
+  if(ui.tab!=='prac')draft.run=false;
+  $('#tabs').innerHTML=TABS.map(function(t){return '<button class="tab" role="tab" data-act="tab" data-v="'+t[0]+'" aria-selected="'+(t[0]===ui.tab&&!ui.gq)+'">'+ico(t[2],16)+'<span>'+t[1]+'</span></button>'}).join('');
+  var v={dash:vDash,qb:vQB,wsyl:vWSyl,psyl:vPSyl,extra:vExtra,plan:vPlan,bm:vBM,prac:vPrac}[ui.tab];
+  $('#main').innerHTML=ui.gq?vSearch():v();
+  var f=$('#fab'),lbl=FAB[ui.tab];
+  f.hidden=!lbl||!!ui.gq;
+  if(lbl)f.innerHTML=ico('plus',20)+'<span>'+lbl+'</span>';
+  if(ui.tab==='prac'&&draft.run&&!ui.gq)startTick();
+}
+function startTick(){
+  draft.t0=Date.now()-draft.secs*1000;
+  tick=setInterval(function(){draft.secs=Math.floor((Date.now()-draft.t0)/1000);var e=$('#pt');if(e)e.textContent=fmt(draft.secs)},500);
+}
+function go(tab){ui.tab=tab;ui.gq='';$('#gs').value='';render();window.scrollTo(0,0)}
+
+/* ---------- modal form ---------- */
+var cfg=null,delArmed=false;
+function fld(f,v){
+  var id='f_'+f.k,val=v[f.k]==null?'':v[f.k],c;
+  if(f.t==='check')return '<label class="ck"><input id="'+id+'" type="checkbox"'+(val?' checked':'')+'><span>'+f.l+'</span></label>';
+  if(f.t==='textarea')c='<textarea id="'+id+'" rows="'+(f.rows||4)+'"'+(f.req?' required':'')+'>'+esc(val)+'</textarea>';
+  else if(f.t==='select')c='<select id="'+id+'">'+f.o.map(function(o){return '<option value="'+esc(o[0])+'"'+(String(o[0])===String(val)?' selected':'')+'>'+esc(o[1])+'</option>'}).join('')+'</select>';
+  else c='<input id="'+id+'" type="'+(f.t||'text')+'" value="'+esc(val)+'"'+(f.req?' required':'')+(f.t==='number'?' inputmode="numeric" min="0"':'')+'>';
+  return '<div class="fld"><label for="'+id+'">'+f.l+(f.req?' *':'')+'</label>'+c+'</div>';
+}
+function openForm(c){
+  cfg=c;delArmed=false;
+  $('#mt').textContent=c.title;
+  $('#mf').innerHTML=c.fields.map(function(f){return fld(f,c.values||{})}).join('')
+   +'<div class="btns">'+(c.onDelete?'<button type="button" class="btn warm" data-act="mdel">'+ico('trash',16)+' মুছুন</button>':'')+'<span class="sp"></span><button type="button" class="btn" data-act="mclose">বাতিল</button><button type="submit" class="btn pri">সংরক্ষণ</button></div>';
+  $('#ov').hidden=false;
+  var first=$('#mf input:not([type=checkbox]),#mf textarea,#mf select');if(first&&!c.noFocus)setTimeout(function(){first.focus()},30);
+}
+function openInfo(title,html){cfg=null;$('#mt').textContent=title;$('#mf').innerHTML=html;$('#ov').hidden=false}
+function closeForm(){$('#ov').hidden=true;cfg=null}
+$('#mf').addEventListener('submit',function(e){
+  e.preventDefault();if(!cfg||!cfg.onSave)return;
+  var vals={};cfg.fields.forEach(function(f){var el=$('#f_'+f.k);vals[f.k]=f.t==='check'?el.checked:f.t==='number'?(el.value===''?'':Number(el.value)):el.value.trim()});
+  cfg.onSave(vals);save();closeForm();render();
+});
+function toast(m){var t=$('#toast');t.textContent=m;t.hidden=false;clearTimeout(toast.h);toast.h=setTimeout(function(){t.hidden=true},2600)}
+
+/* ---------- forms ---------- */
+function crud(arr,title,fields,defaults,opts){
+  return function(id){
+    var it=id?byId(arr,id):null,vals=it?Object.assign({},it):Object.assign({},defaults||{});
+    openForm({title:(it?title+' সম্পাদনা':title+' যোগ'),fields:fields,values:vals,
+      onSave:function(v){if(it){Object.assign(it,v);delete it.s}else S[arr].push(Object.assign({id:uid()},v,opts&&opts.extra?opts.extra:{}))},
+      onDelete:it?function(){S[arr]=S[arr].filter(function(x){return x.id!==id})}:null});
+  };
+}
+var F={
+ q:function(id){return crud('questions','প্রশ্ন',[
+   {k:'subj',l:'বিষয়',t:'select',o:subOpts()},{k:'bcs',l:'কত তম বিসিএস (সংখ্যা)',t:'number'},
+   {k:'text',l:'প্রশ্ন',t:'textarea',req:1,rows:4},{k:'marks',l:'মান',t:'number'},{k:'ans',l:'উত্তর / নোট',t:'textarea',rows:5}],
+   {subj:ui.qsub!=='all'?ui.qsub:(S.subjects[0]||{}).id,bcs:'',marks:5,star:0})(id)},
+ syl:function(id){return crud('syllabus','টপিক',[{k:'subj',l:'বিষয়',t:'select',o:subOpts()},{k:'title',l:'টপিকের নাম',req:1},{k:'done',l:'পড়া শেষ',t:'check'}],{subj:ui.wsub,done:0})(id)},
+ preli:function(id){return crud('preli','প্রিলি বিষয়',[{k:'subj',l:'বিষয়ের নাম',req:1},{k:'marks',l:'নম্বর',t:'number',req:1},{k:'topics',l:'টপিক / সিলেবাস',t:'textarea',rows:4}],{marks:10})(id)},
+ note:function(id){return crud('extra','অতিরিক্ত নোট',[{k:'subj',l:'বিষয়',t:'select',o:subOpts(1)},{k:'title',l:'শিরোনাম',req:1},{k:'body',l:'বিস্তারিত',t:'textarea',rows:7,req:1}],{subj:ui.esub!=='all'?ui.esub:'',star:0})(id)},
+ task:function(id){return crud('plan','কাজ',[{k:'title',l:'কাজের নাম',req:1},{k:'date',l:'তারিখ',t:'date'},{k:'subj',l:'বিষয়',t:'select',o:subOpts(1)},{k:'done',l:'সম্পন্ন',t:'check'}],{date:today(),subj:'',done:0})(id)},
+ bm:function(id){return crud('bm','বুকমার্ক',[{k:'title',l:'শিরোনাম',req:1},{k:'note',l:'নোট বা লিংক',t:'textarea',rows:3}],{})(id)},
+ prac:function(id){return crud('prac','সেশন',[{k:'title',l:'শিরোনাম'},{k:'text',l:'উত্তর',t:'textarea',rows:8}],{})(id)},
+ subj:function(){openForm({title:'নতুন বিষয় যোগ',fields:[{k:'name',l:'বিষয়ের নাম',req:1}],values:{},onSave:function(v){var s={id:'u'+uid(),name:v.name};S.subjects.push(s);ui.qsub=ui.tab==='qb'?s.id:ui.qsub;ui.wsub=ui.tab==='wsyl'?s.id:ui.wsub;ui.esub=ui.tab==='extra'?s.id:ui.esub}})},
+ exam:function(){openForm({title:'পরীক্ষার তারিখ',fields:[{k:'examName',l:'পরীক্ষার নাম',t:'text'},{k:'examDate',l:'তারিখ',t:'date'}],values:S.settings,onSave:function(v){S.settings=v}})}
+};
+var ADD={qb:F.q,wsyl:F.syl,psyl:F.preli,extra:F.note,plan:F.task,bm:F.bm};
+
+/* ---------- practice helpers ---------- */
+function shrink(file){return new Promise(function(res,rej){var fr=new FileReader();fr.onload=function(){var im=new Image();im.onload=function(){var k=Math.min(1,1000/Math.max(im.width,im.height)),w=Math.round(im.width*k),h=Math.round(im.height*k),c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(im,0,0,w,h);res(c.toDataURL('image/jpeg',.7))};im.onerror=rej;im.src=fr.result};fr.onerror=rej;fr.readAsDataURL(file)})}
+
+/* ---------- events ---------- */
+document.addEventListener('click',function(e){
+  var t=e.target.closest('[data-act]');if(!t)return;
+  var a=t.dataset.act,id=t.dataset.id,v=t.dataset.v,it;
+  switch(a){
+    case 'tab':go(v);break;
+    case 'fab':if(ADD[ui.tab])ADD[ui.tab]();break;
+    case 'fs':document.body.style.setProperty('--fs',v);document.querySelectorAll('.fsz button').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.v===v)});try{localStorage.setItem('bcsp-fs',v)}catch(x){}break;
+    case 'mclose':closeForm();break;
+    case 'mdel':if(!delArmed){delArmed=true;t.innerHTML=ico('trash',16)+' নিশ্চিত করুন — মুছুন'}else{var d=cfg&&cfg.onDelete;if(d){d();save();closeForm();render()}}break;
+    case 'qsub':ui.qsub=v;render();break;
+    case 'qbcs':ui.qbcs=v;render();break;
+    case 'wsub':ui.wsub=v;render();break;
+    case 'esub':ui.esub=v;render();break;
+    case 'pf':ui.pf=v;render();break;
+    case 'tog':var cur=ui.open[v]!==undefined?ui.open[v]:ui.defOpen;ui.open[v]=!cur;render();break;
+    case 'expall':ui.defOpen=true;ui.open={};render();break;
+    case 'colall':ui.defOpen=false;ui.open={};render();break;
+    case 'ans':ui.ans[id]=!ui.ans[id];render();break;
+    case 'star':it=byId(t.dataset.k,id);if(it){it.star=it.star?0:1;save();render()}break;
+    case 'sylchk':it=byId('syllabus',id);if(it){it.done=it.done?0:1;save();render()}break;
+    case 'planchk':it=byId('plan',id);if(it){it.done=it.done?0:1;save();render()}break;
+    case 'addq':F.q();break; case 'editq':F.q(id);break;
+    case 'addsyl':F.syl();break; case 'editsyl':F.syl(id);break;
+    case 'addpreli':F.preli();break; case 'editpreli':F.preli(id);break;
+    case 'addnote':F.note();break; case 'editnote':F.note(id);break;
+    case 'addtask':F.task();break; case 'edittask':F.task(id);break;
+    case 'addbm':F.bm();break; case 'editbm':F.bm(id);break;
+    case 'editprac':F.prac(id);break;
+    case 'addsubj':F.subj();break;
+    case 'setexam':F.exam();break;
+    case 'prq':draft.qid=id;go('prac');break;
+    case 'ptoggle':draft.run=!draft.run;render();break;
+    case 'preset':draft.run=false;draft.secs=0;render();break;
+    case 'pimgrm':draft.img='';render();break;
+    case 'psave':
+      if(!draft.text.trim()&&!draft.img){toast('উত্তর লিখুন অথবা ছবি যোগ করুন');break}
+      var q=draft.qid?byId('questions',draft.qid):null;
+      S.prac.push({id:uid(),title:q?q.text.slice(0,70):(draft.text.trim().slice(0,40)||'ছবির উত্তর'),text:draft.text,img:draft.img,secs:draft.secs,date:today()});
+      if(save()){draft={qid:'',text:'',img:'',secs:0,run:false,t0:0};toast('সেশন সংরক্ষিত হয়েছে');render()}else S.prac.pop();
+      break;
+    case 'zoom':it=byId('prac',id);if(it)openInfo('হাতের লেখা','<img class="thumb" style="max-height:none;width:100%" src="'+it.img+'" alt="হাতের লেখার ছবি">');break;
+    case 'clearsample':
+      ['questions','syllabus','extra','plan'].forEach(function(k){S[k]=S[k].filter(function(x){return !x.s})});save();render();toast('নমুনা তথ্য মুছে ফেলা হয়েছে');break;
+    case 'copy':
+      var copy=JSON.parse(JSON.stringify(S));copy.prac.forEach(function(p){p.img=''});var txt=JSON.stringify(copy);
+      var show=function(){openInfo('ডাটা কপি','<div class="fld"><label for="bk">নিচের লেখাটি সব নির্বাচন করে কপি করুন</label><textarea id="bk" rows="8" readonly>'+esc(txt)+'</textarea></div>');setTimeout(function(){var b=$('#bk');if(b){b.focus();b.select()}},30)};
+      try{navigator.clipboard.writeText(txt).then(function(){toast('ডাটা কপি হয়েছে')},show)}catch(x){show()}
+      break;
+    case 'import':
+      openForm({title:'ডাটা আমদানি',fields:[{k:'raw',l:'কপি করা ডাটা এখানে পেস্ট করুন (বর্তমান ডাটা বদলে যাবে)',t:'textarea',rows:7,req:1}],values:{},noFocus:0,
+        onSave:function(v){try{var d=JSON.parse(v.raw);if(!d||!d.v||!Array.isArray(d.questions))throw 0;S=d;['subjects','questions','syllabus','preli','extra','plan','bm','prac'].forEach(function(k){if(!Array.isArray(S[k]))S[k]=[]});S.settings=S.settings||{};toast('আমদানি সম্পন্ন')}catch(x){toast('ডাটা সঠিক নয়')}}});
+      break;
+  }
+});
+document.addEventListener('input',function(e){
+  var id=e.target.id;
+  if(id==='gs'){ui.gq=e.target.value;render()}
+  else if(id==='qs'){ui.qq=e.target.value;$('#qlist').innerHTML=qList()}
+  else if(id==='es'){ui.eq=e.target.value;$('#elist').innerHTML=eList()}
+  else if(id==='pd-text'){draft.text=e.target.value}
+});
+document.addEventListener('change',function(e){
+  var id=e.target.id;
+  if(id==='pd-q'){draft.qid=e.target.value;render()}
+  else if(id==='pi-cam'||id==='pi-gal'){var f=e.target.files&&e.target.files[0];if(f)shrink(f).then(function(d){draft.img=d;render()},function(){toast('ছবি পড়া যায়নি')})}
+});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!$('#ov').hidden)closeForm()});
+$('#ov').addEventListener('click',function(e){if(e.target===this)closeForm()});
+
+/* ---------- boot ---------- */
+$('#logo').innerHTML=ico('bank',24);
+$('#sico').innerHTML=ico('search',16);
+$('#mx').innerHTML=ico('x',18);
+try{var fs=localStorage.getItem('bcsp-fs');if(fs){document.body.style.setProperty('--fs',fs);document.querySelectorAll('.fsz button').forEach(function(b){b.setAttribute('aria-pressed',b.dataset.v===fs)})}}catch(x){}
+save();
+render();
+})();
+</script>
+</body></html>
